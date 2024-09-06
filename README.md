@@ -13,7 +13,7 @@ This project aims to create a platform that uses Artificial Intelligence to reco
 
 ## Requirements
 
-- Python 3.8 or higher
+- Python 3.9 or higher
 - pip 24.2 or higher
 
 ## Dependencies
