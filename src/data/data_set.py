@@ -31,7 +31,7 @@ class DataSet:
 
         self.file_path = f"{self.download_path}/{self.download_url.split('/')[-1]}"
         self.extracted_path = f"{self.download_path}/dataset/"
-        self.audios_path = f"{self.extracted_path}/audio/"
+        self.audios_path = f"{self.extracted_path}/nsynth-test/audio/"
 
     def get_data_set(self) -> None:
         """
