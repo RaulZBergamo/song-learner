@@ -31,5 +31,5 @@ class MidiConverter:
 
         if midi_number is None:
             raise ValueError("Pitch não encontrado nos dados.")
-        
+
         return self.midi_to_note_name(midi_number)

@@ -25,8 +25,7 @@ def main():
     """
 
     data_set.get_data_set()
-    
-    
+
 
 if __name__ == '__main__':
     main()

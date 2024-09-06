@@ -57,7 +57,7 @@ class DataSet:
         os.makedirs(self.download_path, exist_ok=True)
 
         try:
-            with requests.get(self.download_url, stream=True) as r:
+            with requests.get(self.download_url, stream=True, timeout=60) as r:
                 r.raise_for_status()
                 total_size = int(r.headers.get('content-length', 0))  # Obtém o tamanho do arquivo
                 block_size = 8192  # Tamanho do chunk (8KB)
@@ -117,3 +117,9 @@ class DataSet:
         if not os.listdir(self.audios_path):
             logging.error('Nenhum audio encontrado.')
             raise FileNotFoundError('Nenhum audio encontrado.')
+
+    def filter_data_set(self, filter_by: str) -> None:
+        """
+        Método responsável por filtrar o dataset.
+        :param filter_by: Parâmetro para filtrar o dataset.
+        """
