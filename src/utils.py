@@ -29,5 +29,5 @@ def convert_notes_to_labels(notes: List[str]) -> List[int]:
         note_label = note_to_base_label[note_name]
         label = (octave * 12) + note_label  # Calcula o rótulo único
         labels.append(label)
-    
+
     return labels

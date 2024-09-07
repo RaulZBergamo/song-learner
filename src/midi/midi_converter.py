@@ -19,7 +19,7 @@ class MidiConverter:
         :param midi_number: Número MIDI (int)
         :return: Nome da nota (str)
         """
-        octave = (midi_number // 12)
+        octave = midi_number // 12
         note = self.note_names[midi_number % 12]
         if '-' in note:
             pass
