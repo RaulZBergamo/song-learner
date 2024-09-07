@@ -7,8 +7,9 @@ E vamos fazer a obtenção dos dados por um link de download
 import logging
 import tarfile
 import os
-from tqdm import tqdm
+from typing import List
 
+from tqdm import tqdm
 import requests
 
 class DataSet:
@@ -33,7 +34,7 @@ class DataSet:
         self.extracted_path = f"{self.download_path}/dataset/"
         self.audios_path = f"{self.extracted_path}/nsynth-test/audio/"
 
-    def get_data_set(self) -> None:
+    def download_data_set(self) -> None:
         """
         Método responsável por obter o dataset.
         """
@@ -118,8 +119,14 @@ class DataSet:
             logging.error('Nenhum audio encontrado.')
             raise FileNotFoundError('Nenhum audio encontrado.')
 
-    def filter_data_set(self, filter_by: str) -> None:
+    def get_wav_files(self) -> List[str]:
         """
-        Método responsável por filtrar o dataset.
-        :param filter_by: Parâmetro para filtrar o dataset.
+        Retorna uma lista de arquivos .wav dentro do diretório de áudio descompactado.
+        :return: Lista de caminhos de arquivos .wav
         """
+        wav_files = []
+        for root, _, files in os.walk(self.audios_path):
+            for file in files:
+                if file.endswith('.wav'):
+                    wav_files.append(os.path.join(root, file))
+        return wav_files
