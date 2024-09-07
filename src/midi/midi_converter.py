@@ -21,8 +21,6 @@ class MidiConverter:
         """
         octave = midi_number // 12
         note = self.note_names[midi_number % 12]
-        if '-' in note:
-            pass
         return f"{note}{octave}"
 
     def process_note_data(self, note_data: Dict[str, Any]) -> str:
