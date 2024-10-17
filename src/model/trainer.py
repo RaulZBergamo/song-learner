@@ -38,9 +38,6 @@ class ModelTrainer:
             running_loss = 0.0
 
             for i, (spectograms, labels) in enumerate(data_loader):
-                # Ajustar as entradas
-                spectograms = spectograms.unsqueeze(1)  # Adiciona o canal (1, altura, largura)
-
                 # Zerar gradientes do otimizador
                 self.optimizer.zero_grad()
 

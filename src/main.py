@@ -46,7 +46,15 @@ def main():
     spectograms, labels = WavController(wav_files, midi_converter).get_data_for_training()
     labels = convert_notes_to_labels(labels)
 
+    # spectrograms: Uma lista de np.ndarrays, no total tem 4096 itens
+    # Cada item possui 173 colunas e 1025 linhas
+
     # Criar o dataset e DataLoader
+    # - dataset é uma instância de SpectrogramDataset que herda de DataSet (PyTorch)
+    # com isso temos basicamente um DataFrame, onde cada linha tem arrays com as mesmas 
+    # medidas do espectrograma, basicamente um array de 1 por 1025 por 173
+    # - data_loader é uma instância de DataLoader (PyTorch) que é responsável por carregar
+    # os dados em lotes para o treino
     dataset = SpectrogramDataset(spectograms, labels)
     data_loader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
 

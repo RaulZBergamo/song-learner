@@ -11,12 +11,11 @@ class SpectrogramDataset(Dataset):
     """
     Classe para carregar os dados de espectrogramas e notas musicais em um dataset.
     """
-    def __init__(self, spectrograms: List[torch.Tensor], labels: List[int]):
+    def __init__(self, spectrograms: List[torch.Tensor], labels: List[int]) -> None:
         """
         Inicializa o dataset com espectrogramas e rótulos numéricos.
         
         :param spectrograms: Lista de arrays contendo os espectrogramas.
-        :param labels: Lista de rótulos numéricos correspondentes às notas musicais.
         """
         self.spectrograms = spectrograms
         self.labels = labels
@@ -28,7 +27,7 @@ class SpectrogramDataset(Dataset):
         """
         return len(self.spectrograms)
 
-    def __getitem__(self, idx: int) -> Tuple[torch.Tensor, torch.Tensor]:
+    def __getitem__(self, idx: int) -> torch.Tensor:
         """
         Retorna o espectrograma e o rótulo na posição idx.
         
