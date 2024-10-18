@@ -31,8 +31,7 @@ data_set = DataSet(
 batch_size = 32
 learning_rate = 0.001
 num_epochs = 10
-num_classes = 10
-
+num_classes = 120
 
 def main():
     """

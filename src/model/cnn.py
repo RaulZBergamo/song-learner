@@ -38,7 +38,7 @@ class SpectrogramCNN(nn.Module):
         self.dropout = nn.Dropout(0.5)
         
         # Camada totalmente conectada (fully connected)
-        self.fc1 = nn.Linear(128 * 4 * 4, 256)  # Ajuste o valor 128 * 4 * 4 conforme o tamanho do espectrograma
+        self.fc1 = nn.Linear(128 * 128 * 21, 256)
         self.fc2 = nn.Linear(256, num_classes)
     
     def forward(self, spectrogram: torch.Tensor) -> torch.Tensor:
@@ -54,7 +54,7 @@ class SpectrogramCNN(nn.Module):
         spectrogram = self.pool3(F.relu(self.bn3(self.conv3(spectrogram))))
         
         # Flatten para as fully connected layers
-        spectrogram = spectrogram.view(-1, 128 * 4 * 4)
+        spectrogram = spectrogram.view(spectrogram.size(0), -1)
         
         # Passagem pelas fully connected layers com dropout
         spectrogram = F.relu(self.fc1(spectrogram))
