@@ -34,7 +34,7 @@ class WavController:
         """
         self.file_paths = file_paths
         self.midi_converter = midi_converter
-        self.save_path = save_path or os.getcwd() + '/assets/spectrograms/'
+        self.save_path = save_path or os.getcwd() + '/spectrograms/'
         os.makedirs(self.save_path, exist_ok=True)  # Cria o diretório se não existir
 
         self.audio_data = []
@@ -136,7 +136,7 @@ class WavController:
             plt.title(f'Espectrograma do arquivo {self.file_paths[idx]} (Nota: {self.notes[idx]})')
             plt.show()
 
-    def get_data_for_training(self, regenerate: bool = False) -> Tuple[List[np.ndarray], List[str]]:
+    def get_data(self, regenerate: bool = False) -> Tuple[List[np.ndarray], List[str]]:
         """
         Gera os espectrogramas e retorna junto com os nomes das notas musicais.
         :param regenerate: Se True, regera os espectrogramas e notas, mesmo que já existam.

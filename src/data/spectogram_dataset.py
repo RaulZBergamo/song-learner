@@ -2,7 +2,7 @@
 Módulo para carregar os dados de espectrogramas e notas musicais em um dataset.
 """
 
-from typing import List, Tuple
+from typing import List
 
 import torch
 from torch.utils.data import Dataset

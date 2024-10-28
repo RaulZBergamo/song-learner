@@ -70,12 +70,12 @@ class ModelTrainer:
         Avalia o modelo com os dados fornecidos.
         :param data_loader: DataLoader contendo os dados de avaliação.
         """
-        self.model.eval()  # Coloca o modelo em modo de avaliação
+        self.model.eval()
         correct = 0
         total = 0
-        with torch.no_grad():  # Desativa a computação de gradientes para avaliação
+
+        with torch.no_grad():
             for spectograms, labels in data_loader:
-                spectograms = spectograms.unsqueeze(1)  # Adiciona a dimensão do canal
                 outputs = self.model(spectograms)
                 _, predicted = torch.max(outputs.data, 1)
                 total += labels.size(0)
