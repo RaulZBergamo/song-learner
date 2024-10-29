@@ -17,37 +17,45 @@ class DataSet:
     Classe responsável por obter os dados de audio a serem utilizados no projeto.
     """
 
-    def __init__(self, data_set_url: str, download_path: str = None) -> None:
+    def __init__(self, data_set_url: str, train: bool) -> None:
         """
         Instancia um novo objeto DataSet.
+
         :param data_set_url: URL do dataset a ser utilizado.
-        :param download_url: URL para download do dataset.
+        :param train: Se True, carrega o dataset de treinamento, caso contrário, o de dataset de teste.
         """
 
         if not data_set_url:
             raise ValueError('O link do dataset não pode ser vazio.')
 
+        type_data = 'train' if train else 'test'
+
         self.download_url = data_set_url
-        self.download_path = download_path or os.getcwd() + "/assets/"
+        self.download_path = f"./assets/{type_data}_dataset/"
 
         self.file_path = f"{self.download_path}/{self.download_url.split('/')[-1]}"
         self.extracted_path = f"{self.download_path}/dataset/"
-        self.audios_path = f"{self.extracted_path}/nsynth-test/audio/"
+        self.audios_path = f"{self.extracted_path}/nsynth-{type_data}/audio/"
 
-    def download_data_set(self) -> None:
+    def download_data_set(self) -> str:
         """
         Método responsável por obter o dataset.
+
+        :return O caminho do dataset.
         """
         logging.info('Obtendo dataset...')
 
-        if os.path.exists(self.file_path):
+        if os.path.exists(self.audios_path):
+            logging.info('Dataset já existe.')
+
+        elif os.path.exists(self.file_path):
             logging.info('Dataset já existe.')
             self.__uncompress_data_set()
 
         else:
             self.__download_data_set()
 
-        self.__validate_data_set()
+        return self.__validate_data_set()
 
     def __download_data_set(self) -> None:
         """
@@ -101,11 +109,13 @@ class DataSet:
 
         logging.info('Dataset descompactado com sucesso no caminho: %s', self.download_path)
 
-    def __validate_data_set(self) -> None:
+    def __validate_data_set(self) -> str:
         """
         Método responsável por validar o dataset.
         Nesse caso, vamos verificar se o dataset foi descompactado
         E se existem arquivos de audio.
+
+        :return O caminho do diretório de audio.
         """
         if not os.path.exists(self.extracted_path):
             logging.error('Dataset não encontrado.')
@@ -118,10 +128,13 @@ class DataSet:
         if not os.listdir(self.audios_path):
             logging.error('Nenhum audio encontrado.')
             raise FileNotFoundError('Nenhum audio encontrado.')
+        
+        return self.audios_path
 
     def get_wav_files(self) -> List[str]:
         """
         Retorna uma lista de arquivos .wav dentro do diretório de áudio descompactado.
+
         :return: Lista de caminhos de arquivos .wav
         """
         wav_files = []

@@ -33,13 +33,13 @@ def main():
     """
     Função principal que executa o pipeline de treinamento do modelo.
     """
-    data_loader = get_dataset(train=True, save_path='assets/train_spectrograms/')
+    data_loader = get_dataset(train=True)
     model_path = train_model(data_loader)
 
-    data_loader = get_dataset(train=False, save_path='assets/test_spectrograms/')
+    data_loader = get_dataset(train=False)
     evaluate_model(model_path, data_loader)
 
-def get_dataset(train: bool, save_path: str = None) -> DataLoader:
+def get_dataset(train: bool) -> DataLoader:
     """
     Função que carrega o dataset e retorna um DataLoader.
 
@@ -49,10 +49,11 @@ def get_dataset(train: bool, save_path: str = None) -> DataLoader:
     env_model = 'TRAIN_DATASET_URL' if train else 'TESTE_DATASET_URL'
 
     data_set = DataSet(
-        os.getenv(env_model)
+        data_set_url=os.getenv(env_model),
+        train=train
     )
 
-    data_set.download_data_set()
+    save_path = data_set.download_data_set()
     wav_files = data_set.get_wav_files()
 
     spectograms, labels = WavController(wav_files, midi_converter, save_path).get_data()
