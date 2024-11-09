@@ -8,11 +8,9 @@ import pickle
 from typing import Tuple, List
 
 import numpy as np
-import matplotlib.pyplot as plt
 import librosa
 import librosa.display
 from midi.midi_converter import MidiConverter
-
 
 class WavController:
     """
@@ -37,8 +35,6 @@ class WavController:
         self.save_path = save_path or os.getcwd() + '/spectrograms/'
         os.makedirs(self.save_path, exist_ok=True)  # Cria o diretório se não existir
 
-        self.audio_data = []
-        self.sample_rates = []
         self.spectrograms = []
         self.notes = []
 
@@ -70,9 +66,7 @@ class WavController:
         Processa um único arquivo de áudio: gera espectrograma e converte o pitch para nome de nota.
         :param file_path: Caminho do arquivo .wav.
         """
-        audio_data, sample_rate = librosa.load(file_path)
-        self.audio_data.append(audio_data)
-        self.sample_rates.append(sample_rate)
+        audio_data, _ = librosa.load(file_path, sr=16000)
 
         # Gera o espectrograma
         spectogram_abs = np.abs(librosa.stft(audio_data))
@@ -119,22 +113,6 @@ class WavController:
             pickle.dump(self.notes[-1], f)
 
         logging.info('Espectrograma e nota salvos para %s.', file_name)
-
-    def plot_spectrograms(self) -> None:
-        """
-        Método responsável por plotar os espectrogramas dos áudios carregados.
-        """
-        for idx, spectrogram in enumerate(self.spectrograms):
-            plt.figure(figsize=(10, 6))
-            librosa.display.specshow(
-                spectrogram,
-                sr=self.sample_rates[idx],
-                x_axis='time',
-                y_axis='log'
-            )
-            plt.colorbar(format='%+2.0f dB')
-            plt.title(f'Espectrograma do arquivo {self.file_paths[idx]} (Nota: {self.notes[idx]})')
-            plt.show()
 
     def get_data(self, regenerate: bool = False) -> Tuple[List[np.ndarray], List[str]]:
         """
