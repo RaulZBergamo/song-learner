@@ -38,7 +38,7 @@ class SpectrogramCNN(nn.Module):
         self.dropout = nn.Dropout(0.5)
         
         # Camada totalmente conectada (fully connected)
-        self.fc1 = nn.Linear(128 * 128 * 21, 256)
+        self.fc1 = nn.Linear(128 * 128 * 15, 256)
         self.fc2 = nn.Linear(256, 1)
     
     def forward(self, spectrogram: torch.Tensor) -> torch.Tensor:
@@ -52,7 +52,7 @@ class SpectrogramCNN(nn.Module):
         spectrogram = self.pool1(self.bn1(self.conv1(spectrogram)))
         spectrogram = self.pool2(self.bn2(self.conv2(spectrogram)))
         spectrogram = self.pool3(self.bn3(self.conv3(spectrogram)))
-        
+
         # Flatten para as fully connected layers
         spectrogram = spectrogram.view(spectrogram.size(0), -1)
         

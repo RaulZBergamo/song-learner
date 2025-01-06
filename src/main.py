@@ -76,7 +76,7 @@ def train_model(dataset: DataSet) -> str:
         spectogram, label = wav_controller.load_wav(item['audio'])
         spectograms_dataset.add_sample(spectogram, label)
 
-    data_loader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
+    data_loader = DataLoader(spectograms_dataset, batch_size=batch_size, shuffle=True)
 
     # Inicializar o modelo CNN
     model = SpectrogramCNN()

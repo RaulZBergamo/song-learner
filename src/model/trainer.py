@@ -38,6 +38,9 @@ class ModelTrainer:
             running_loss = 0.0
 
             for i, (spectograms, labels) in enumerate(data_loader):
+                # Adicionar dimensão extra para os labels
+                labels = labels.unsqueeze(1).float()
+
                 # Zerar gradientes do otimizador
                 self.optimizer.zero_grad()
 
