@@ -9,35 +9,44 @@ import tarfile
 import os
 from typing import List
 
-from tqdm import tqdm
 import requests
+from tqdm import tqdm
+from repositories.huggingface_repository import HugginfaceRepository
+from datasets import Dataset
 
 class DataSet:
     """
     Classe responsável por obter os dados de audio a serem utilizados no projeto.
     """
 
-    def __init__(self, data_set_url: str) -> None:
+    def __init__(
+        self,
+        data_set_url: str,
+        hub_repo: HugginfaceRepository,
+        update_dataset: bool = False
+    ) -> None:
         """
         Instancia um novo objeto DataSet.
 
         :param data_set_url: URL do dataset a ser utilizado.
         :param train: Se True, carrega o dataset de treinamento, caso contrário, o de dataset de teste.
         """
+        self.hub_repository = hub_repo
+        self.update_dataset = update_dataset
 
         if not data_set_url:
             raise ValueError('O link do dataset não pode ser vazio.')
 
         self.download_url = data_set_url
 
-        type_data = self.download_url.split('/')[-1].split('.')[0]
+        self.type_data = self.download_url.split('/')[-1].split('.')[0]
 
-        self.download_path = f"./assets/{type_data}_dataset/"
+        self.download_path = f"./assets/{self.type_data}_dataset/"
         self.file_path = f"{self.download_path}/{self.download_url.split('/')[-1]}"
         self.extracted_path = f"{self.download_path}/dataset/"
-        self.audios_path = f"{self.extracted_path}/{type_data}/audio/"
+        self.audios_path = f"{self.extracted_path}/{self.type_data}/audio/"
 
-    def download_data_set(self) -> str:
+    def download_data_set(self) -> Dataset:
         """
         Método responsável por obter o dataset.
 
@@ -45,17 +54,26 @@ class DataSet:
         """
         logging.info('Obtendo dataset...')
 
-        if os.path.exists(self.audios_path):
-            logging.info('Dataset já existe.')
-
-        elif os.path.exists(self.file_path):
-            logging.info('Dataset já existe.')
-            self.__uncompress_data_set()
-
+        if not self.update_dataset and self.hub_repository.check_existing_datasets(self.type_data):
+            return self.hub_repository.get_dataset_from_huggingface(self.type_data)
         else:
-            self.__download_data_set()
+            if os.path.exists(self.audios_path):
+                logging.info('Dataset já existe.')
 
-        return self.__validate_data_set()
+            elif os.path.exists(self.file_path):
+                logging.info('Dataset já existe.')
+                self.__uncompress_data_set()
+
+            else:
+                self.__download_data_set()
+
+            self.__validate_data_set()
+
+            return self.hub_repository.upload_dataset_to_huggingface(
+                dataset_path=self.audios_path,
+                repo_name=self.type_data,
+                private=False
+            )
 
     def __download_data_set(self) -> None:
         """
@@ -130,16 +148,3 @@ class DataSet:
             raise FileNotFoundError('Nenhum audio encontrado.')
         
         return self.audios_path
-
-    def get_wav_files(self) -> List[str]:
-        """
-        Retorna uma lista de arquivos .wav dentro do diretório de áudio descompactado.
-
-        :return: Lista de caminhos de arquivos .wav
-        """
-        wav_files = []
-        for root, _, files in os.walk(self.audios_path):
-            for file in files:
-                if file.endswith('.wav'):
-                    wav_files.append(os.path.join(root, file))
-        return wav_files

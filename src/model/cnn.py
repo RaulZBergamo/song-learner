@@ -11,7 +11,7 @@ class SpectrogramCNN(nn.Module):
     Modelo de Rede Neural Convolucional projetado para classificação de espectrogramas de áudio.
     Inclui múltiplas camadas convolucionais seguidas por pooling, dropout e fully connected layers.
     """
-    def __init__(self, num_classes: int) -> None:
+    def __init__(self) -> None:
         """
         Instancia o modelo SpectrogramCNN.
         
@@ -39,25 +39,25 @@ class SpectrogramCNN(nn.Module):
         
         # Camada totalmente conectada (fully connected)
         self.fc1 = nn.Linear(128 * 128 * 21, 256)
-        self.fc2 = nn.Linear(256, num_classes)
+        self.fc2 = nn.Linear(256, 1)
     
     def forward(self, spectrogram: torch.Tensor) -> torch.Tensor:
         """
         Define a passagem direta do modelo.
         
-        :param x: Tensor de entrada (espectrograma).
-        :return: Saída do modelo, que consiste nas probabilidades de classificação para cada classe.
+        :param spectrogram: Tensor de entrada (espectrograma).
+        :return: Saída do modelo.
         """
-        # Passagem pelas camadas convolucionais com ReLU e Pooling
-        spectrogram = self.pool1(F.relu(self.bn1(self.conv1(spectrogram))))
-        spectrogram = self.pool2(F.relu(self.bn2(self.conv2(spectrogram))))
-        spectrogram = self.pool3(F.relu(self.bn3(self.conv3(spectrogram))))
+        # Passagem pelas camadas convolucionais com Pooling e BatchNorm
+        spectrogram = self.pool1(self.bn1(self.conv1(spectrogram)))
+        spectrogram = self.pool2(self.bn2(self.conv2(spectrogram)))
+        spectrogram = self.pool3(self.bn3(self.conv3(spectrogram)))
         
         # Flatten para as fully connected layers
         spectrogram = spectrogram.view(spectrogram.size(0), -1)
         
         # Passagem pelas fully connected layers com dropout
-        spectrogram = F.relu(self.fc1(spectrogram))
+        spectrogram = self.fc1(spectrogram)
         spectrogram = self.dropout(spectrogram)
         spectrogram = self.fc2(spectrogram)
         

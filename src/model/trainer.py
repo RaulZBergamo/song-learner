@@ -24,7 +24,7 @@ class ModelTrainer:
         self.model = model
         self.num_epochs = num_epochs
         self.learning_rate = learning_rate
-        self.criterion = nn.CrossEntropyLoss()  # Função de perda para classificação
+        self.criterion = nn.MSELoss()  # Função de perda para classificação
         self.optimizer = optim.Adam(self.model.parameters(), lr=self.learning_rate)
 
     def train(self, data_loader: DataLoader):

@@ -16,12 +16,17 @@ from controller.wav_controller import WavController
 from utils import convert_notes_to_labels
 from model.cnn import SpectrogramCNN
 from model.trainer import ModelTrainer
+from repositories.huggingface_repository import HugginfaceRepository
+from datasets import Dataset
 
 dotenv.load_dotenv()
 
 logging.basicConfig(level=logging.INFO)
 
 midi_converter = MidiConverter()
+wav_controller = WavController(midi_converter)
+
+hub_repo = HugginfaceRepository(os.getenv('HUGGINGFACEHUB_USERNAME'))
 
 # Hiperparâmetros
 batch_size = 32
@@ -33,13 +38,13 @@ def main():
     """
     Função principal que executa o pipeline de treinamento do modelo.
     """
-    data_loader = get_dataset(train=True)
-    model_path = train_model(data_loader)
+    dataset = get_dataset(train=True)
+    model_path = train_model(dataset)
 
-    data_loader = get_dataset(train=False)
-    evaluate_model(model_path, data_loader)
+    dataset = get_dataset(train=False)
+    evaluate_model(model_path, dataset)
 
-def get_dataset(train: bool) -> DataLoader:
+def get_dataset(train: bool) -> DataSet:
     """
     Função que carrega o dataset e retorna um DataLoader.
 
@@ -48,22 +53,13 @@ def get_dataset(train: bool) -> DataLoader:
     """
     env_model = 'TRAIN_DATASET_URL' if train else 'TESTE_DATASET_URL'
 
-    data_set = DataSet(
-        data_set_url=os.getenv(env_model)
-    )
+    return DataSet(
+        data_set_url=os.getenv(env_model),
+        hub_repo=hub_repo,
+        update_dataset=False
+    ).download_data_set()
 
-    save_path = data_set.download_data_set()
-    wav_files = data_set.get_wav_files()
-
-    spectograms, labels = WavController(wav_files, midi_converter, save_path).get_data()
-    labels = convert_notes_to_labels(labels)
-
-    dataset = SpectrogramDataset(spectograms, labels)
-    data_loader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
-
-    return data_loader
-
-def train_model(data_loader: DataLoader) -> str:
+def train_model(dataset: DataSet) -> str:
     """
     Função que treina o modelo de CNN e salva o modelo treinado.
 
@@ -76,8 +72,16 @@ def train_model(data_loader: DataLoader) -> str:
 
     logging.info("Iniciando treinamento do modelo CNN...")
 
+    spectograms_dataset = SpectrogramDataset()
+
+    for item in dataset['train']:
+        spectogram, label = wav_controller.load_wav(item['audio'])
+        spectograms_dataset.add_sample(spectogram, label)
+
+    data_loader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
+
     # Inicializar o modelo CNN
-    model = SpectrogramCNN(num_classes=num_classes)
+    model = SpectrogramCNN()
 
     # Inicializar o objeto ModelTrainer e treinar o modelo
     trainer = ModelTrainer(
