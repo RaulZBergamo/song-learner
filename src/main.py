@@ -13,11 +13,9 @@ from midi.midi_converter import MidiConverter
 from data.data_set import DataSet
 from data.spectogram_dataset import SpectrogramDataset
 from controller.wav_controller import WavController
-from utils import convert_notes_to_labels
 from model.cnn import SpectrogramCNN
 from model.trainer import ModelTrainer
 from repositories.huggingface_repository import HugginfaceRepository
-from datasets import Dataset
 
 dotenv.load_dotenv()
 
