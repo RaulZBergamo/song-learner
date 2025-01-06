@@ -49,8 +49,7 @@ def get_dataset(train: bool) -> DataLoader:
     env_model = 'TRAIN_DATASET_URL' if train else 'TESTE_DATASET_URL'
 
     data_set = DataSet(
-        data_set_url=os.getenv(env_model),
-        train=train
+        data_set_url=os.getenv(env_model)
     )
 
     save_path = data_set.download_data_set()

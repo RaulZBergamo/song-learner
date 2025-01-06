@@ -17,7 +17,7 @@ class DataSet:
     Classe responsável por obter os dados de audio a serem utilizados no projeto.
     """
 
-    def __init__(self, data_set_url: str, train: bool) -> None:
+    def __init__(self, data_set_url: str) -> None:
         """
         Instancia um novo objeto DataSet.
 
@@ -28,14 +28,14 @@ class DataSet:
         if not data_set_url:
             raise ValueError('O link do dataset não pode ser vazio.')
 
-        type_data = 'train' if train else 'test'
-
         self.download_url = data_set_url
-        self.download_path = f"./assets/{type_data}_dataset/"
 
+        type_data = self.download_url.split('/')[-1].split('.')[0]
+
+        self.download_path = f"./assets/{type_data}_dataset/"
         self.file_path = f"{self.download_path}/{self.download_url.split('/')[-1]}"
         self.extracted_path = f"{self.download_path}/dataset/"
-        self.audios_path = f"{self.extracted_path}/nsynth-{type_data}/audio/"
+        self.audios_path = f"{self.extracted_path}/{type_data}/audio/"
 
     def download_data_set(self) -> str:
         """
